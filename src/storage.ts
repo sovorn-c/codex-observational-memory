@@ -9,6 +9,7 @@ export type ThreadState = {
   workerInFlight: boolean;
   lastInjectedAt?: string;
   lastConsolidatedAt?: string;
+  sessionSourceOffsets?: Record<string, number>;
 };
 
 export type ThreadStore = {

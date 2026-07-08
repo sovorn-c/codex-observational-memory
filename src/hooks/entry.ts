@@ -8,6 +8,7 @@ import { renderMemory } from "../ledger/render.js";
 import { appendLedger, appendDebug, appendSources, makeSourceEntry, readLedger, readSources, readState, threadStore, writeSessionIndex, writeState } from "../storage.js";
 import { localTimestamp, hashId } from "../tokens.js";
 import { loadConfig } from "../config.js";
+import { findCodexSessionFile, readSessionSources } from "./session-source.js";
 
 type HookPayload = Record<string, unknown>;
 
@@ -43,6 +44,7 @@ function stringField(payload: HookPayload, keys: string[]): string | undefined {
 function threadId(payload: HookPayload): string {
   return process.env.CODEX_THREAD_ID
     || stringField(payload, ["threadId", "thread_id", "conversationId", "conversation_id"])
+    || sessionId(payload)
     || hashId(process.cwd());
 }
 
@@ -152,8 +154,22 @@ async function main(): Promise<void> {
   }
   if (event === "Stop") {
     const store = threadStore(tid);
-    const sources = extractSources(payload, tid);
+    const state = readState(store);
+    const sid = sessionId(payload);
+    const sessionPath = sid ? findCodexSessionFile(sid) : undefined;
+    const sessionCapture = sid && sessionPath
+      ? readSessionSources({ path: sessionPath, offset: state.sessionSourceOffsets?.[sid] ?? 0, threadId: tid, sessionId: sid })
+      : undefined;
+    const directSources = sessionCapture && sessionCapture.sources.length > 0 ? [] : extractSources(payload, tid);
+    const existingIds = new Set(readSources(store).map((source) => source.id));
+    const sources = [...directSources, ...(sessionCapture?.sources ?? [])].filter((source) => !existingIds.has(source.id));
     appendSources(store, sources);
+    if (sessionCapture && sid) {
+      writeState(store, {
+        ...readState(store),
+        sessionSourceOffsets: { ...readState(store).sessionSourceOffsets, [sid]: sessionCapture.nextOffset }
+      });
+    }
     maybeSpawnConsolidation(tid);
     return;
   }
