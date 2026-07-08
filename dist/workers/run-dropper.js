@@ -1,4 +1,4 @@
-import { observationLine, reflectionLine } from "../ledger/render.js";
+import { observationLine, reflectionLine } from "../memory/render.js";
 import { DROPPER_SCHEMA, DROPPER_SYSTEM } from "./prompts.js";
 function isRecord(value) {
     return typeof value === "object" && value !== null;

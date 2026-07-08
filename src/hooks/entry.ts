@@ -3,9 +3,9 @@ import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { recursionGuarded } from "../config.js";
-import { foldLedger, rawTokensSinceObservationCoverage, rawTokensSinceReflectionCoverage } from "../ledger/fold.js";
-import { renderMemory } from "../ledger/render.js";
-import { appendLedger, appendDebug, appendSources, makeSourceEntry, readLedger, readSources, readState, threadStore, writeSessionIndex, writeState } from "../storage.js";
+import { foldMemoryFiles, rawTokensSinceSourceId } from "../memory/fold.js";
+import { renderMemory } from "../memory/render.js";
+import { appendDebug, appendSources, makeSourceEntry, readMemoryFiles, readSources, readState, threadStore, writeSessionIndex, writeState } from "../storage.js";
 import { localTimestamp, hashId } from "../tokens.js";
 import { loadConfig } from "../config.js";
 import { findCodexSessionFile, readSessionSources } from "./session-source.js";
@@ -94,7 +94,7 @@ function extractSources(payload: HookPayload, tid: string): ReturnType<typeof ma
 
 function renderForThread(tid: string): string {
   const store = threadStore(tid);
-  const folded = foldLedger(readLedger(store));
+  const folded = foldMemoryFiles(readMemoryFiles(store));
   return renderMemory(folded.reflections, folded.activeObservations);
 }
 
@@ -105,17 +105,16 @@ function injectIfDue(tid: string, reason: string): void {
   if (!rendered) return;
   if (reason !== "SessionStart" && !state.injectionDue) return;
   process.stdout.write(`\n${rendered}\n`);
-  appendLedger(store, { type: "om.injected", timestamp: localTimestamp(), reason });
   writeState(store, { ...state, injectionDue: false, lastInjectedAt: localTimestamp() });
 }
 
 function maybeSpawnConsolidation(tid: string): void {
   const config = loadConfig();
   const store = threadStore(tid);
-  const ledger = readLedger(store);
   const sources = readSources(store);
-  const observeDue = rawTokensSinceObservationCoverage(ledger, sources) >= config.memory.observeAfterTokens;
-  const reflectDue = rawTokensSinceReflectionCoverage(ledger, sources) >= config.memory.reflectAfterTokens;
+  const state = readState(store);
+  const observeDue = rawTokensSinceSourceId(state.observedSourceUpToId, sources) >= config.memory.observeAfterTokens;
+  const reflectDue = rawTokensSinceSourceId(state.reflectedSourceUpToId, sources) >= config.memory.reflectAfterTokens;
   if (!observeDue && !reflectDue) return;
   const cli = resolve(dirname(fileURLToPath(import.meta.url)), "../cli.js");
   const child = spawn(process.execPath, [cli, "consolidate", "--thread", tid], {
@@ -176,7 +175,6 @@ async function main(): Promise<void> {
   if (event === "PreCompact") return;
   if (event === "PostCompact") {
     const store = threadStore(tid);
-    appendLedger(store, { type: "om.compaction", timestamp: localTimestamp(), native: true });
     writeState(store, { ...readState(store), injectionDue: true });
   }
 }

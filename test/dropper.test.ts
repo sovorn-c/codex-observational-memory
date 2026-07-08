@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { maxDropCount, selectDropIds } from "../src/workers/run-dropper.js";
-import type { Observation } from "../src/ledger/types.js";
+import type { Observation } from "../src/memory/types.js";
 
 const observations: Observation[] = [
   { id: "highhighhigh", content: "high", timestamp: "2026-07-08 10:00", relevance: "high", sourceEntryIds: ["s"], tokenCount: 10 },

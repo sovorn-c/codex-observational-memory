@@ -2,21 +2,25 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { join } from "node:path";
 import { codexHome } from "./config.js";
 import { hashId, localTimestamp, estimateStringTokens } from "./tokens.js";
-import type { LedgerRecord, SourceEntry } from "./ledger/types.js";
+import type { DropRecord, Observation, Reflection, SourceEntry } from "./memory/types.js";
 
 export type ThreadState = {
   injectionDue: boolean;
   workerInFlight: boolean;
   lastInjectedAt?: string;
   lastConsolidatedAt?: string;
+  observedSourceUpToId?: string;
+  reflectedSourceUpToId?: string;
   sessionSourceOffsets?: Record<string, number>;
 };
 
 export type ThreadStore = {
   threadId: string;
   dir: string;
-  ledgerPath: string;
   sourcesPath: string;
+  observationsPath: string;
+  reflectionsPath: string;
+  droppedPath: string;
   statePath: string;
 };
 
@@ -35,8 +39,10 @@ export function threadStore(threadId: string, env: NodeJS.ProcessEnv = process.e
   return {
     threadId,
     dir,
-    ledgerPath: join(dir, "ledger.jsonl"),
     sourcesPath: join(dir, "sources.jsonl"),
+    observationsPath: join(dir, "observations.jsonl"),
+    reflectionsPath: join(dir, "reflections.jsonl"),
+    droppedPath: join(dir, "dropped.jsonl"),
     statePath: join(dir, "state.json")
   };
 }
@@ -64,15 +70,6 @@ function readJsonl<T>(path: string): T[] {
     });
 }
 
-export function readLedger(store: ThreadStore): LedgerRecord[] {
-  return readJsonl<LedgerRecord>(store.ledgerPath);
-}
-
-export function appendLedger(store: ThreadStore, record: LedgerRecord): void {
-  ensureStore(store);
-  appendFileSync(store.ledgerPath, `${JSON.stringify(record)}\n`, "utf8");
-}
-
 export function readSources(store: ThreadStore): SourceEntry[] {
   return readJsonl<SourceEntry>(store.sourcesPath);
 }
@@ -81,12 +78,44 @@ export function appendSources(store: ThreadStore, sources: SourceEntry[]): void 
   if (sources.length === 0) return;
   ensureStore(store);
   for (const source of sources) appendFileSync(store.sourcesPath, `${JSON.stringify(source)}\n`, "utf8");
-  appendLedger(store, {
-    type: "om.source.recorded",
-    timestamp: localTimestamp(),
-    sourceEntryIds: sources.map((source) => source.id),
-    coversUpToId: sources.at(-1)?.id
-  });
+}
+
+export function readObservations(store: ThreadStore): Observation[] {
+  return readJsonl<Observation>(store.observationsPath);
+}
+
+export function appendObservations(store: ThreadStore, observations: Observation[]): void {
+  if (observations.length === 0) return;
+  ensureStore(store);
+  for (const observation of observations) appendFileSync(store.observationsPath, `${JSON.stringify(observation)}\n`, "utf8");
+}
+
+export function readReflections(store: ThreadStore): Reflection[] {
+  return readJsonl<Reflection>(store.reflectionsPath);
+}
+
+export function appendReflections(store: ThreadStore, reflections: Reflection[]): void {
+  if (reflections.length === 0) return;
+  ensureStore(store);
+  for (const reflection of reflections) appendFileSync(store.reflectionsPath, `${JSON.stringify(reflection)}\n`, "utf8");
+}
+
+export function readDropped(store: ThreadStore): DropRecord[] {
+  return readJsonl<DropRecord>(store.droppedPath);
+}
+
+export function appendDropped(store: ThreadStore, drops: DropRecord[]): void {
+  if (drops.length === 0) return;
+  ensureStore(store);
+  for (const drop of drops) appendFileSync(store.droppedPath, `${JSON.stringify(drop)}\n`, "utf8");
+}
+
+export function readMemoryFiles(store: ThreadStore): { observations: Observation[]; reflections: Reflection[]; dropped: DropRecord[] } {
+  return {
+    observations: readObservations(store),
+    reflections: readReflections(store),
+    dropped: readDropped(store)
+  };
 }
 
 export function readState(store: ThreadStore): ThreadState {

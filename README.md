@@ -24,7 +24,7 @@ Long Codex sessions can span days or weeks. Native compaction keeps the thread a
 - rejected approaches and why they were rejected
 - user corrections that must survive compaction
 
-This plugin keeps a separate thread-local ledger under `CODEX_HOME`. After compaction, Codex receives a concise rendered memory block backed by records from the same thread.
+This plugin keeps a separate thread-local memory store under `CODEX_HOME`. After compaction, Codex receives a concise rendered memory block backed by source records from the same thread.
 
 ## What It Does
 
@@ -77,7 +77,7 @@ The npm install initializes visible local storage at `~/.codex/observational-mem
   threads/
 ```
 
-`config.json` contains the default LLM and memory thresholds. Per-thread source and ledger files are created later, after Codex hooks record turns.
+`config.json` contains the default LLM and memory thresholds. Per-thread source, observation, reflection, dropped, and state files are created later, after Codex hooks record turns and workers consolidate memory.
 
 The `/codex-om:*` commands can appear while developing inside this repository because Codex can see the local `commands/` directory. That does not mean the plugin hooks are installed. Automatic recording and post-compaction injection require the Codex plugin to appear as `installed, enabled` in:
 
@@ -238,8 +238,10 @@ Generated state lives under:
 $CODEX_HOME/observational-memory/
   config.json
   debug/hooks.ndjson
-  threads/<thread-id>/ledger.jsonl
   threads/<thread-id>/sources.jsonl
+  threads/<thread-id>/observations.jsonl
+  threads/<thread-id>/reflections.jsonl
+  threads/<thread-id>/dropped.jsonl
   threads/<thread-id>/state.json
   sessions/<session-id>/index.json
 ```
@@ -253,23 +255,15 @@ Default `CODEX_HOME`:
 Memory is scoped to one Codex thread:
 
 - `threads/<thread-id>/sources.jsonl` stores captured source records.
-- `threads/<thread-id>/ledger.jsonl` stores observations, reflections, drops, compaction markers, injection markers, and worker errors.
-- `threads/<thread-id>/state.json` stores small state such as `injectionDue`.
+- `threads/<thread-id>/observations.jsonl` stores model-distilled observations.
+- `threads/<thread-id>/reflections.jsonl` stores durable reflections distilled from observations.
+- `threads/<thread-id>/dropped.jsonl` stores tombstones for observations removed from active rendered memory.
+- `threads/<thread-id>/state.json` stores small state such as `injectionDue`, session offsets, and worker watermarks.
 - `sessions/<session-id>/index.json` maps a session id back to a thread id.
 
-## Ledger Records
+## Memory Files
 
-| Record type | Purpose |
-| --- | --- |
-| `om.source.recorded` | Source entries were captured. |
-| `om.observations.recorded` | Observer emitted observations. |
-| `om.reflections.recorded` | Reflector emitted durable reflections. |
-| `om.observations.dropped` | Dropper tombstoned observations from active memory. |
-| `om.compaction` | Codex native compaction happened. |
-| `om.injected` | OM memory was injected into the thread. |
-| `om.worker.error` | A worker failed and recorded an actionable error. |
-
-Observations and reflections use first-valid-record-wins semantics. Drops are tombstones: they remove observations from active rendered memory, but recall can still find source evidence.
+Observations and reflections use first-valid-record-wins semantics. Dropped records are tombstones: they remove observations from active rendered memory, but recall can still find source evidence through `sources.jsonl`.
 
 ## Configuration
 
@@ -404,7 +398,7 @@ codex-observational-memory/
 |   |-- config.ts
 |   |-- storage.ts
 |   |-- hooks/entry.ts
-|   |-- ledger/
+|   |-- memory/
 |   |-- mcp/server.ts
 |   |-- providers/
 |   `-- workers/

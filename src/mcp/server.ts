@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { foldLedger, tokenSum } from "../ledger/fold.js";
-import { recall } from "../ledger/recall.js";
-import { renderMemory } from "../ledger/render.js";
-import { readLedger, readSessionIndex, readSources, readState, threadStore } from "../storage.js";
+import { foldMemoryFiles, tokenSum } from "../memory/fold.js";
+import { recall } from "../memory/recall.js";
+import { renderMemory } from "../memory/render.js";
+import { readMemoryFiles, readSessionIndex, readSources, readState, threadStore } from "../storage.js";
 import { VERSION } from "../version.js";
 import { consolidateThread, type ConsolidationMode } from "../workers/consolidate.js";
 
@@ -31,7 +31,7 @@ function toolList() {
 async function callTool(name: string, args: Record<string, unknown>) {
   const store = threadStore(threadId(args));
   if (name === "om_status") {
-    const folded = foldLedger(readLedger(store));
+    const folded = foldMemoryFiles(readMemoryFiles(store));
     const sources = readSources(store);
     const state = readState(store);
     return { content: [{ type: "text", text: [
@@ -45,13 +45,13 @@ async function callTool(name: string, args: Record<string, unknown>) {
     ].join("\n") }] };
   }
   if (name === "om_view") {
-    const folded = foldLedger(readLedger(store));
+    const folded = foldMemoryFiles(readMemoryFiles(store));
     const observations = args.full === true ? folded.observations : folded.activeObservations;
     return { content: [{ type: "text", text: renderMemory(folded.reflections, observations) || "No observational memory recorded." }] };
   }
   if (name === "om_recall") {
     const id = typeof args.id === "string" ? args.id : "";
-    return { content: [{ type: "text", text: JSON.stringify(recall(id, foldLedger(readLedger(store)), readSources(store)), null, 2) }] };
+    return { content: [{ type: "text", text: JSON.stringify(recall(id, foldMemoryFiles(readMemoryFiles(store)), readSources(store)), null, 2) }] };
   }
   if (name === "om_consolidate") {
     const mode = typeof args.mode === "string" ? args.mode as ConsolidationMode : "all";

@@ -1,4 +1,4 @@
-import type { FoldedLedger, Reflection, SourceEntry } from "./types.js";
+import type { FoldedMemory, Reflection, SourceEntry } from "./types.js";
 
 export type RecallResult =
   | { status: "not_found"; id: string }
@@ -13,7 +13,7 @@ export type RecallResult =
       missingSupportingObservationIds: string[];
     };
 
-export function recall(id: string, folded: FoldedLedger, sources: readonly SourceEntry[]): RecallResult {
+export function recall(id: string, folded: FoldedMemory, sources: readonly SourceEntry[]): RecallResult {
   const sourceById = new Map(sources.map((source) => [source.id, source]));
   const directObservation = folded.observationsById.get(id);
   const directReflection = folded.reflectionsById.get(id);

@@ -1,7 +1,7 @@
 import { hashId, estimateStringTokens } from "../tokens.js";
 import type { LlmProvider } from "../providers/index.js";
-import { observationLine, reflectionLine } from "../ledger/render.js";
-import type { Observation, Reflection } from "../ledger/types.js";
+import { observationLine, reflectionLine } from "../memory/render.js";
+import type { Observation, Reflection } from "../memory/types.js";
 import { REFLECTION_SCHEMA, REFLECTOR_SYSTEM } from "./prompts.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {

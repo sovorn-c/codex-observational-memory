@@ -10,8 +10,10 @@ export function threadStore(threadId, env = process.env) {
     return {
         threadId,
         dir,
-        ledgerPath: join(dir, "ledger.jsonl"),
         sourcesPath: join(dir, "sources.jsonl"),
+        observationsPath: join(dir, "observations.jsonl"),
+        reflectionsPath: join(dir, "reflections.jsonl"),
+        droppedPath: join(dir, "dropped.jsonl"),
         statePath: join(dir, "state.json")
     };
 }
@@ -37,13 +39,6 @@ function readJsonl(path) {
         }
     });
 }
-export function readLedger(store) {
-    return readJsonl(store.ledgerPath);
-}
-export function appendLedger(store, record) {
-    ensureStore(store);
-    appendFileSync(store.ledgerPath, `${JSON.stringify(record)}\n`, "utf8");
-}
 export function readSources(store) {
     return readJsonl(store.sourcesPath);
 }
@@ -53,12 +48,43 @@ export function appendSources(store, sources) {
     ensureStore(store);
     for (const source of sources)
         appendFileSync(store.sourcesPath, `${JSON.stringify(source)}\n`, "utf8");
-    appendLedger(store, {
-        type: "om.source.recorded",
-        timestamp: localTimestamp(),
-        sourceEntryIds: sources.map((source) => source.id),
-        coversUpToId: sources.at(-1)?.id
-    });
+}
+export function readObservations(store) {
+    return readJsonl(store.observationsPath);
+}
+export function appendObservations(store, observations) {
+    if (observations.length === 0)
+        return;
+    ensureStore(store);
+    for (const observation of observations)
+        appendFileSync(store.observationsPath, `${JSON.stringify(observation)}\n`, "utf8");
+}
+export function readReflections(store) {
+    return readJsonl(store.reflectionsPath);
+}
+export function appendReflections(store, reflections) {
+    if (reflections.length === 0)
+        return;
+    ensureStore(store);
+    for (const reflection of reflections)
+        appendFileSync(store.reflectionsPath, `${JSON.stringify(reflection)}\n`, "utf8");
+}
+export function readDropped(store) {
+    return readJsonl(store.droppedPath);
+}
+export function appendDropped(store, drops) {
+    if (drops.length === 0)
+        return;
+    ensureStore(store);
+    for (const drop of drops)
+        appendFileSync(store.droppedPath, `${JSON.stringify(drop)}\n`, "utf8");
+}
+export function readMemoryFiles(store) {
+    return {
+        observations: readObservations(store),
+        reflections: readReflections(store),
+        dropped: readDropped(store)
+    };
 }
 export function readState(store) {
     if (!existsSync(store.statePath))
