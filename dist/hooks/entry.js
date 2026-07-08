@@ -39,13 +39,13 @@ function stringField(payload, keys) {
     return undefined;
 }
 function threadId(payload) {
-    return process.env.CODEX_THREAD_ID
-        || stringField(payload, ["threadId", "thread_id", "conversationId", "conversation_id"])
+    return stringField(payload, ["threadId", "thread_id", "conversationId", "conversation_id"])
         || sessionId(payload)
+        || process.env.CODEX_THREAD_ID
         || hashId(process.cwd());
 }
 function sessionId(payload) {
-    return process.env.CODEX_SESSION_ID || stringField(payload, ["sessionId", "session_id"]);
+    return stringField(payload, ["sessionId", "session_id"]) || process.env.CODEX_SESSION_ID;
 }
 function turnId(payload) {
     return stringField(payload, ["turnId", "turn_id", "id"]);

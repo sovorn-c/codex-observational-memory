@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./dist/hooks/entry.js --event SessionStart",
+            "command": "codex-observational-memory hook --event SessionStart",
             "statusMessage": "Loading observational memory"
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./dist/hooks/entry.js --event UserPromptSubmit",
+            "command": "codex-observational-memory hook --event UserPromptSubmit",
             "statusMessage": "Injecting observational memory"
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./dist/hooks/entry.js --event Stop",
+            "command": "codex-observational-memory hook --event Stop",
             "statusMessage": "Recording observational memory",
             "timeout": 60
           }
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./dist/hooks/entry.js --event PreCompact",
+            "command": "codex-observational-memory hook --event PreCompact",
             "statusMessage": "Preparing observational memory"
           }
         ]
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ./dist/hooks/entry.js --event PostCompact",
+            "command": "codex-observational-memory hook --event PostCompact",
             "statusMessage": "Scheduling observational memory injection"
           }
         ]

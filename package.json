@@ -1,6 +1,6 @@
 {
   "name": "codex-observational-memory",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Source-backed observational memory for long Codex sessions.",
   "type": "module",
   "author": "sovorn-c <cheasovorn4@gmail.com>",
