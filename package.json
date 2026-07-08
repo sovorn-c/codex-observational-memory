@@ -1,0 +1,38 @@
+{
+  "name": "codex-observational-memory",
+  "version": "0.1.0",
+  "description": "Source-backed observational memory for long Codex sessions.",
+  "type": "module",
+  "author": "sovorn-c <cheasovorn4@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sovorn-c/codex-observational-memory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sovorn-c/codex-observational-memory/issues"
+  },
+  "homepage": "https://github.com/sovorn-c/codex-observational-memory#readme",
+  "bin": {
+    "codex-observational-memory": "./dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    ".agents/",
+    ".codex-plugin/",
+    "commands/",
+    "hooks/",
+    "skills/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.5"
+  }
+}

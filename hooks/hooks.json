@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./dist/hooks/entry.js --event SessionStart",
+            "statusMessage": "Loading observational memory"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./dist/hooks/entry.js --event UserPromptSubmit",
+            "statusMessage": "Injecting observational memory"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./dist/hooks/entry.js --event Stop",
+            "statusMessage": "Recording observational memory",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./dist/hooks/entry.js --event PreCompact",
+            "statusMessage": "Preparing observational memory"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./dist/hooks/entry.js --event PostCompact",
+            "statusMessage": "Scheduling observational memory injection"
+          }
+        ]
+      }
+    ]
+  }
+}

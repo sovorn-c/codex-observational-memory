@@ -1,0 +1,38 @@
+{
+  "name": "codex-observational-memory",
+  "version": "0.1.0",
+  "description": "Source-backed observational memory for long Codex sessions.",
+  "author": {
+    "name": "sovorn-c",
+    "email": "cheasovorn4@gmail.com"
+  },
+  "homepage": "https://github.com/sovorn-c/codex-observational-memory#readme",
+  "repository": "https://github.com/sovorn-c/codex-observational-memory",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "memory",
+    "compaction",
+    "observational-memory"
+  ],
+  "skills": "./skills/",
+  "mcpServers": {
+    "codex-observational-memory": {
+      "command": "node",
+      "args": ["./dist/mcp/server.js"]
+    }
+  },
+  "interface": {
+    "displayName": "Codex Observational Memory",
+    "shortDescription": "Source-backed memory for long Codex threads",
+    "longDescription": "Adds source-backed observations, reflections, recall, and post-compaction memory injection without editing Codex session files.",
+    "developerName": "sovorn-c",
+    "category": "Engineering",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Show this thread's observational memory status.",
+      "Recall the source evidence for a memory id.",
+      "Consolidate this thread's observational memory."
+    ]
+  }
+}
