@@ -66,6 +66,19 @@ codex plugin marketplace add "$(npm root -g)/codex-observational-memory"
 codex plugin add codex-observational-memory --marketplace codex-observational-memory
 ```
 
+The npm install initializes visible local storage at `~/.codex/observational-memory/`:
+
+```text
+~/.codex/observational-memory/
+  config.json
+  install.json
+  debug/
+  sessions/
+  threads/
+```
+
+`config.json` contains the default LLM and memory thresholds. Per-thread source and ledger files are created later, after Codex hooks record turns.
+
 The `/codex-om:*` commands can appear while developing inside this repository because Codex can see the local `commands/` directory. That does not mean the plugin hooks are installed. Automatic recording and post-compaction injection require the Codex plugin to appear as `installed, enabled` in:
 
 ```bash

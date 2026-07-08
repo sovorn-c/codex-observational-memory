@@ -1,6 +1,6 @@
 {
   "name": "codex-observational-memory",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Source-backed observational memory for long Codex sessions.",
   "type": "module",
   "author": "sovorn-c <cheasovorn4@gmail.com>",
@@ -22,11 +22,13 @@
     ".codex-plugin/",
     "commands/",
     "hooks/",
+    "scripts/init-storage.mjs",
     "skills/",
     "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "postinstall": "node scripts/init-storage.mjs",
     "version:patch": "node scripts/bump-version.mjs patch",
     "version:minor": "node scripts/bump-version.mjs minor",
     "version:major": "node scripts/bump-version.mjs major",
