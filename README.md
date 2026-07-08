@@ -58,10 +58,18 @@ Refresh updates from GitHub:
 codex plugin marketplace upgrade codex-observational-memory
 ```
 
-The npm package installs the same bundle for environments that prefer npm-managed files:
+The npm package installs the same bundle for environments that prefer npm-managed files, but npm does not register Codex plugins by itself. After installing the package globally, add the installed package directory as a Codex marketplace and install the plugin from it:
 
 ```bash
 npm install -g codex-observational-memory
+codex plugin marketplace add "$(npm root -g)/codex-observational-memory"
+codex plugin add codex-observational-memory --marketplace codex-observational-memory
+```
+
+The `/codex-om:*` commands can appear while developing inside this repository because Codex can see the local `commands/` directory. That does not mean the plugin hooks are installed. Automatic recording and post-compaction injection require the Codex plugin to appear as `installed, enabled` in:
+
+```bash
+codex plugin list
 ```
 
 After Codex loads the plugin, start or resume a Codex thread and run:
