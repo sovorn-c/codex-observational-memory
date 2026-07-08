@@ -5,7 +5,7 @@ import { GeminiProvider } from "../src/providers/gemini.js";
 import type { OmConfig } from "../src/config.js";
 
 const baseConfig: OmConfig = {
-  llm: { provider: "opencode-go", model: "deepseek-v4-flash", apiKey: "k", baseUrl: "" },
+  llm: { provider: "opencode-go", model: "deepseek-v4-flash", apiKey: "k" },
   memory: { observeAfterTokens: 1, reflectAfterTokens: 1, observationsPoolMaxTokens: 10, observationsPoolTargetTokens: 5 },
   debug: false,
   warnings: []
@@ -44,7 +44,7 @@ describe("providers", () => {
       ok: true,
       text: async () => JSON.stringify({ candidates: [{ content: { parts: [{ text: "not json" }] } }] })
     })));
-    const provider = new GeminiProvider({ model: "gemini-3.1-flash-lite", apiKey: "k", baseUrl: "https://example.test" });
+    const provider = new GeminiProvider({ model: "gemini-3.1-flash-lite", apiKey: "k" });
     await expect(provider.runJson({
       kind: "observer",
       systemPrompt: "s",

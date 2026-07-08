@@ -90,8 +90,7 @@ Config file schema:
   "llm": {
     "provider": "codex",
     "model": "gpt-5.4-mini",
-    "apiKey": "",
-    "baseUrl": ""
+    "apiKey": ""
   },
   "memory": {
     "observeAfterTokens": 10000,
@@ -113,7 +112,6 @@ Environment variable overrides:
 OM_LLM_PROVIDER=codex
 OM_LLM_MODEL=gpt-5.4-mini
 OM_LLM_API_KEY=
-OM_LLM_BASE_URL=
 OM_OBSERVE_AFTER_TOKENS=10000
 OM_REFLECT_AFTER_TOKENS=20000
 OM_OBSERVATIONS_POOL_MAX_TOKENS=20000
@@ -170,7 +168,7 @@ README config examples:
 }
 ```
 
-For user shorthand, accept `OM_LLM_PROVIDER=deepseek` as an alias for `openrouter` in v1 only when `OM_LLM_BASE_URL` is unset. Normalize it internally to:
+For user shorthand, accept `OM_LLM_PROVIDER=deepseek` as an alias for `openrouter` in v1. Normalize it internally to:
 
 ```bash
 OM_LLM_PROVIDER=openrouter

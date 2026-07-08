@@ -29,15 +29,20 @@ export interface LlmProvider {
   runJson(request: WorkerRequest): Promise<WorkerResponse>;
 }
 
+const PROVIDER_ENDPOINTS = {
+  openrouter: "https://openrouter.ai/api/v1/chat/completions",
+  opencodeGo: "https://opencode.ai/zen/go/v1/chat/completions"
+} as const;
+
 export function createProvider(config: OmConfig): LlmProvider {
-  const { provider, model, apiKey, baseUrl } = config.llm;
+  const { provider, model, apiKey } = config.llm;
   if (provider === "codex") return new CodexProvider(model);
   if (provider === "openrouter") {
     return new OpenAiCompatibleProvider({
       name: "openrouter",
       model,
       apiKey,
-      baseUrl: baseUrl || "https://openrouter.ai/api/v1/chat/completions"
+      baseUrl: PROVIDER_ENDPOINTS.openrouter
     });
   }
   if (provider === "opencode-go") {
@@ -45,11 +50,11 @@ export function createProvider(config: OmConfig): LlmProvider {
       name: "opencode-go",
       model,
       apiKey,
-      baseUrl: baseUrl || "https://opencode.ai/zen/go/v1/chat/completions"
+      baseUrl: PROVIDER_ENDPOINTS.opencodeGo
     });
   }
-  if (provider === "openai") return new OpenAiProvider({ model, apiKey, baseUrl });
-  return new GeminiProvider({ model, apiKey, baseUrl });
+  if (provider === "openai") return new OpenAiProvider({ model, apiKey });
+  return new GeminiProvider({ model, apiKey });
 }
 
 export function parseJsonText(text: string): unknown {

@@ -9,7 +9,6 @@ export type OmConfig = {
     provider: LlmProviderName;
     model: string;
     apiKey: string;
-    baseUrl: string;
   };
   memory: {
     observeAfterTokens: number;
@@ -25,8 +24,7 @@ export const DEFAULT_CONFIG: OmConfig = {
   llm: {
     provider: "codex",
     model: "gpt-5.4-mini",
-    apiKey: "",
-    baseUrl: ""
+    apiKey: ""
   },
   memory: {
     observeAfterTokens: 10_000,
@@ -93,7 +91,6 @@ function mergeFileConfig(base: OmConfig, file: Partial<OmConfig>): OmConfig {
     if (p) next.llm.provider = p;
     if (typeof file.llm.model === "string" && file.llm.model) next.llm.model = file.llm.model;
     if (typeof file.llm.apiKey === "string") next.llm.apiKey = file.llm.apiKey;
-    if (typeof file.llm.baseUrl === "string") next.llm.baseUrl = file.llm.baseUrl;
   }
   if (isRecord(file.memory)) {
     next.memory.observeAfterTokens = positiveInt(file.memory.observeAfterTokens) ?? next.memory.observeAfterTokens;
@@ -131,7 +128,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): OmConfig {
 
   const rawProvider = env.OM_LLM_PROVIDER;
   if (rawProvider) {
-    if (rawProvider === "deepseek" && !env.OM_LLM_BASE_URL) {
+    if (rawProvider === "deepseek") {
       config.llm.provider = "openrouter";
       config.llm.model = "deepseek/deepseek-v4-flash";
       warnings.push("OM_LLM_PROVIDER=deepseek is a v1 alias for openrouter; prefer OM_LLM_PROVIDER=openrouter or opencode-go.");
@@ -142,7 +139,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): OmConfig {
   }
   if (env.OM_LLM_MODEL !== undefined) config.llm.model = env.OM_LLM_MODEL;
   if (env.OM_LLM_API_KEY !== undefined) config.llm.apiKey = env.OM_LLM_API_KEY;
-  if (env.OM_LLM_BASE_URL !== undefined) config.llm.baseUrl = env.OM_LLM_BASE_URL;
   config.memory.observeAfterTokens = positiveIntEnv(env.OM_OBSERVE_AFTER_TOKENS) ?? config.memory.observeAfterTokens;
   config.memory.reflectAfterTokens = positiveIntEnv(env.OM_REFLECT_AFTER_TOKENS) ?? config.memory.reflectAfterTokens;
   config.memory.observationsPoolMaxTokens = positiveIntEnv(env.OM_OBSERVATIONS_POOL_MAX_TOKENS) ?? config.memory.observationsPoolMaxTokens;

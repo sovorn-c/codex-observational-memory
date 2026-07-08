@@ -248,8 +248,7 @@ Example config:
   "llm": {
     "provider": "codex",
     "model": "gpt-5.4-mini",
-    "apiKey": "",
-    "baseUrl": ""
+    "apiKey": ""
   },
   "memory": {
     "observeAfterTokens": 10000,
@@ -268,7 +267,6 @@ Example config:
 | `llm.provider` | `codex` | Worker provider. Supported: `codex`, `openrouter`, `opencode-go`, `openai`, `gemini`. |
 | `llm.model` | `gpt-5.4-mini` | Model used for observer, reflector, and dropper workers. |
 | `llm.apiKey` | `""` | Optional plaintext API key for external providers. Prefer env vars for secrets. |
-| `llm.baseUrl` | `""` | Optional provider endpoint override. |
 | `memory.observeAfterTokens` | `10000` | Run observer after this many raw source tokens since observation coverage. |
 | `memory.reflectAfterTokens` | `20000` | Run reflector after this many raw source tokens since reflection coverage. |
 | `memory.observationsPoolMaxTokens` | `20000` | Maximum visible observation pool pressure used by memory rendering policy. |
@@ -280,10 +278,9 @@ Example config:
 | Variable | Default | Description |
 | --- | --- | --- |
 | `CODEX_HOME` | `~/.codex` | Base Codex directory. OM state is stored below this path. |
-| `OM_LLM_PROVIDER` | `codex` | Worker provider. `deepseek` is an alias for OpenRouter when no base URL is set. |
+| `OM_LLM_PROVIDER` | `codex` | Worker provider. `deepseek` is an alias for OpenRouter. |
 | `OM_LLM_MODEL` | `gpt-5.4-mini` | Worker model override. |
 | `OM_LLM_API_KEY` | empty | API key for external providers. |
-| `OM_LLM_BASE_URL` | empty | Provider endpoint override. |
 | `OM_OBSERVE_AFTER_TOKENS` | `10000` | Observer threshold override. |
 | `OM_REFLECT_AFTER_TOKENS` | `20000` | Reflector threshold override. |
 | `OM_OBSERVATIONS_POOL_MAX_TOKENS` | `20000` | Observation pool max override. |

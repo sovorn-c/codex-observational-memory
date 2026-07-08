@@ -5,7 +5,7 @@ export class OpenAiProvider extends OpenAiCompatibleProvider {
             name: "openai",
             model: options.model,
             apiKey: options.apiKey,
-            baseUrl: options.baseUrl || "https://api.openai.com/v1/chat/completions"
+            baseUrl: "https://api.openai.com/v1/chat/completions"
         });
     }
 }
