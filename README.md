@@ -174,6 +174,8 @@ Use these commands inside Codex when you need to inspect or control memory:
 
 Normal continuity is automatic. The slash commands are for inspection, recall, and manual maintenance.
 
+OM is supplemental continuity, not a replacement for the current workspace's source of truth. If a repository or nested `AGENTS.md` tells Codex to read project files, graphs, or status documents first, Codex should follow those instructions first and use OM only to recover prior thread context or source-backed decisions.
+
 ## MCP Tools
 
 The slash commands are backed by MCP tools:

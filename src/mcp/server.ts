@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { foldLedger } from "../ledger/fold.js";
+import { foldLedger, tokenSum } from "../ledger/fold.js";
 import { recall } from "../ledger/recall.js";
 import { renderMemory } from "../ledger/render.js";
-import { readLedger, readSources, threadStore } from "../storage.js";
+import { readLedger, readSessionIndex, readSources, readState, threadStore } from "../storage.js";
 import { VERSION } from "../version.js";
 import { consolidateThread, type ConsolidationMode } from "../workers/consolidate.js";
 
@@ -12,7 +12,9 @@ function threadId(params: unknown): string {
   if (params && typeof params === "object" && "threadId" in params && typeof (params as { threadId?: unknown }).threadId === "string") {
     return (params as { threadId: string }).threadId;
   }
-  return process.env.CODEX_THREAD_ID || "default";
+  if (process.env.CODEX_THREAD_ID) return process.env.CODEX_THREAD_ID;
+  if (process.env.CODEX_SESSION_ID) return readSessionIndex(process.env.CODEX_SESSION_ID)?.threadId || process.env.CODEX_SESSION_ID;
+  return "default";
 }
 
 function toolList() {
@@ -30,7 +32,17 @@ async function callTool(name: string, args: Record<string, unknown>) {
   const store = threadStore(threadId(args));
   if (name === "om_status") {
     const folded = foldLedger(readLedger(store));
-    return { content: [{ type: "text", text: `Observations: ${folded.observations.length} recorded / ${folded.activeObservations.length} active\nReflections: ${folded.reflections.length}` }] };
+    const sources = readSources(store);
+    const state = readState(store);
+    return { content: [{ type: "text", text: [
+      `Thread: ${store.threadId}`,
+      `Sources: ${sources.length} records / ${tokenSum(sources)} approx tokens`,
+      `Observations: ${folded.observations.length} recorded / ${folded.activeObservations.length} active / ${folded.droppedObservationIds.size} dropped`,
+      `Reflections: ${folded.reflections.length}`,
+      `Injection due: ${state.injectionDue ? "yes" : "no"}`,
+      `Worker in flight: ${state.workerInFlight ? "yes" : "no"}`,
+      `Session offsets: ${Object.keys(state.sessionSourceOffsets ?? {}).length}`
+    ].join("\n") }] };
   }
   if (name === "om_view") {
     const folded = foldLedger(readLedger(store));

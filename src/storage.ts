@@ -20,6 +20,12 @@ export type ThreadStore = {
   statePath: string;
 };
 
+export type SessionIndex = {
+  sessionId: string;
+  threadId: string;
+  updatedAt: string;
+};
+
 export function omRoot(env: NodeJS.ProcessEnv = process.env): string {
   return join(codexHome(env), "observational-memory");
 }
@@ -106,6 +112,24 @@ export function writeSessionIndex(args: { sessionId?: string; threadId: string }
     threadId: args.threadId,
     updatedAt: localTimestamp()
   }, null, 2)}\n`, "utf8");
+}
+
+export function readSessionIndex(sessionId: string, env: NodeJS.ProcessEnv = process.env): SessionIndex | undefined {
+  const path = join(omRoot(env), "sessions", safeId(sessionId), "index.json");
+  if (!existsSync(path)) return undefined;
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8")) as Partial<SessionIndex>;
+    if (parsed.sessionId === sessionId && typeof parsed.threadId === "string" && parsed.threadId.trim()) {
+      return {
+        sessionId,
+        threadId: parsed.threadId,
+        updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : ""
+      };
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
 }
 
 export function makeSourceEntry(args: {

@@ -85,6 +85,25 @@ export function writeSessionIndex(args, env = process.env) {
         updatedAt: localTimestamp()
     }, null, 2)}\n`, "utf8");
 }
+export function readSessionIndex(sessionId, env = process.env) {
+    const path = join(omRoot(env), "sessions", safeId(sessionId), "index.json");
+    if (!existsSync(path))
+        return undefined;
+    try {
+        const parsed = JSON.parse(readFileSync(path, "utf8"));
+        if (parsed.sessionId === sessionId && typeof parsed.threadId === "string" && parsed.threadId.trim()) {
+            return {
+                sessionId,
+                threadId: parsed.threadId,
+                updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : ""
+            };
+        }
+    }
+    catch {
+        return undefined;
+    }
+    return undefined;
+}
 export function makeSourceEntry(args) {
     const timestamp = args.timestamp ?? localTimestamp();
     const basis = `${args.threadId}\n${args.sessionId ?? ""}\n${args.turnId ?? ""}\n${args.role ?? "unknown"}\n${args.kind ?? "message"}\n${timestamp}\n${args.content}`;
