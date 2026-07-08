@@ -3,6 +3,7 @@ import { foldLedger } from "../ledger/fold.js";
 import { recall } from "../ledger/recall.js";
 import { renderMemory } from "../ledger/render.js";
 import { readLedger, readSources, threadStore } from "../storage.js";
+import { VERSION } from "../version.js";
 import { consolidateThread } from "../workers/consolidate.js";
 function threadId(params) {
     if (params && typeof params === "object" && "threadId" in params && typeof params.threadId === "string") {
@@ -64,7 +65,7 @@ async function handle(line) {
     const request = JSON.parse(line);
     try {
         if (request.method === "initialize")
-            return respond(request.id, { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "codex-observational-memory", version: "0.1.0" } });
+            return respond(request.id, { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "codex-observational-memory", version: VERSION } });
         if (request.method === "tools/list")
             return respond(request.id, toolList());
         if (request.method === "tools/call") {

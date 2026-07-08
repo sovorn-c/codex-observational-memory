@@ -19,7 +19,9 @@
   "mcpServers": {
     "codex-observational-memory": {
       "command": "node",
-      "args": ["./dist/mcp/server.js"]
+      "args": [
+        "./dist/mcp/server.js"
+      ]
     }
   },
   "interface": {
@@ -28,7 +30,10 @@
     "longDescription": "Adds source-backed observations, reflections, recall, and post-compaction memory injection without editing Codex session files.",
     "developerName": "sovorn-c",
     "category": "Engineering",
-    "capabilities": ["Read", "Write"],
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "Show this thread's observational memory status.",
       "Recall the source evidence for a memory id.",

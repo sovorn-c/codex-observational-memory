@@ -81,6 +81,31 @@ The plugin provides:
 | MCP server | `dist/mcp/server.js` | Serves memory tools used by commands and Codex. |
 | Skill | `skills/codex-observational-memory/SKILL.md` | Teaches Codex how to interpret and use OM memory. |
 
+## Versioning
+
+The package version, Codex plugin manifest version, and MCP server version are kept in sync.
+
+Use one of these commands before a release:
+
+```bash
+npm run version:patch
+npm run version:minor
+npm run version:major
+npm run version:set -- 0.2.0
+```
+
+Then run:
+
+```bash
+npm run build
+git add package.json package-lock.json .codex-plugin/plugin.json src/version.ts dist/
+git commit -m "Release v0.2.0"
+git tag v0.2.0
+git push && git push --tags
+```
+
+GitHub users update through `codex plugin marketplace upgrade`. npm users update through `npm update -g codex-observational-memory`.
+
 ## Recommended Codex Setting
 
 For long-running sessions, use a high native compaction limit appropriate for your model:

@@ -3,6 +3,7 @@ import { foldLedger } from "../ledger/fold.js";
 import { recall } from "../ledger/recall.js";
 import { renderMemory } from "../ledger/render.js";
 import { readLedger, readSources, threadStore } from "../storage.js";
+import { VERSION } from "../version.js";
 import { consolidateThread, type ConsolidationMode } from "../workers/consolidate.js";
 
 type JsonRpcRequest = { jsonrpc?: string; id?: string | number | null; method?: string; params?: unknown };
@@ -71,7 +72,7 @@ process.stdin.on("data", (chunk) => {
 async function handle(line: string): Promise<void> {
   const request = JSON.parse(line) as JsonRpcRequest;
   try {
-    if (request.method === "initialize") return respond(request.id, { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "codex-observational-memory", version: "0.1.0" } });
+    if (request.method === "initialize") return respond(request.id, { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "codex-observational-memory", version: VERSION } });
     if (request.method === "tools/list") return respond(request.id, toolList());
     if (request.method === "tools/call") {
       const params = request.params as { name?: string; arguments?: Record<string, unknown> };
