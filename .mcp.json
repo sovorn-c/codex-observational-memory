@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codex-observational-memory": {
+      "command": "node",
+      "args": [
+        "./dist/mcp/server.js"
+      ],
+      "cwd": "."
+    }
+  }
+}

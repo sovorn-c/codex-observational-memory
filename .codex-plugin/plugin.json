@@ -1,6 +1,6 @@
 {
   "name": "codex-observational-memory",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Source-backed observational memory for long Codex sessions.",
   "author": {
     "name": "sovorn-c",
@@ -16,14 +16,7 @@
     "observational-memory"
   ],
   "skills": "./skills/",
-  "mcpServers": {
-    "codex-observational-memory": {
-      "command": "node",
-      "args": [
-        "./dist/mcp/server.js"
-      ]
-    }
-  },
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Codex Observational Memory",
     "shortDescription": "Source-backed memory for long Codex threads",
