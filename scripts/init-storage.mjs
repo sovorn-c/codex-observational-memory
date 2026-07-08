@@ -39,7 +39,7 @@ writeJsonIfMissing(join(root, "install.json"), {
   packageVersion: packageJson.version,
   storageVersion: 1,
   initializedAt: new Date().toISOString(),
-  note: "Thread sources and ledgers are created by Codex hooks after turns."
+  note: "Thread source and memory files are created by Codex hooks and workers after turns."
 });
 
 process.stdout.write(`codex-observational-memory initialized storage at ${root}\n`);

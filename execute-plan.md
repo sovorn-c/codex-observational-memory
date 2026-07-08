@@ -195,10 +195,10 @@ src/cli.ts
 src/config.ts
 src/storage.ts
 src/tokens.ts
-src/ledger/types.ts
-src/ledger/fold.ts
-src/ledger/render.ts
-src/ledger/recall.ts
+src/memory/types.ts
+src/memory/fold.ts
+src/memory/render.ts
+src/memory/recall.ts
 src/workers/prompts.ts
 src/workers/run-observer.ts
 src/workers/run-reflector.ts
@@ -293,24 +293,23 @@ Storage layout:
 $CODEX_HOME/observational-memory/
   config.json
   debug/hooks.ndjson
-  threads/<thread-id>/ledger.jsonl
   threads/<thread-id>/sources.jsonl
+  threads/<thread-id>/observations.jsonl
+  threads/<thread-id>/reflections.jsonl
+  threads/<thread-id>/dropped.jsonl
   threads/<thread-id>/state.json
   sessions/<session-id>/index.json
 ```
 
 Do not store secrets in OM files.
 
-Ledger record types:
+Memory files:
 
 ```text
-om.source.recorded
-om.observations.recorded
-om.reflections.recorded
-om.observations.dropped
-om.compaction
-om.injected
-om.worker.error
+sources.jsonl
+observations.jsonl
+reflections.jsonl
+dropped.jsonl
 ```
 
 Observation schema:
@@ -496,7 +495,7 @@ provider adapter selection
 OpenAI-compatible request construction
 OpenCode Go model ID handling
 Gemini JSON parse failure handling
-ledger append/fold/drop semantics
+memory append/fold/drop semantics
 rendered memory formatting
 recall from active and dropped observations
 token threshold calculations
